@@ -1,0 +1,31 @@
+#container{
+    width: 1000px;
+    height: 700px;
+    display: flex;
+    flex-direction: column;
+}
+
+#content{
+    display: flex;
+    flex: 14.2;
+}
+
+#img1{
+    background-color: #bbd4ed;
+    flex: 1;
+}
+
+#text1{
+    background-color: #ade4f6;
+    flex: 3;
+}
+
+#img2{
+    background-color: #347ecb;
+    flex: 2.9;
+}
+
+#text2{
+    background-color: #faf3b4;
+    flex: 2.9;
+}
