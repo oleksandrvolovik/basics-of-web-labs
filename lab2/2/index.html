@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторна робота №2. Завдання 2</title>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+</head>
+<body>
+
+    <div>
+        Виберіть колір: <input id="color_picker" type="color">
+    </div>
+
+    <table>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>2</td>
+                <td>3</td>
+                <td id="cell4" onmouseover="changeColorToRandom()" onclick="changeColor()" ondblclick="changeDiagonalColors()">4</td>
+                <td>5</td>
+                <td>6</td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td>8</td>
+                <td>9</td>
+                <td>10</td>
+                <td>11</td>
+                <td>12</td>
+            </tr>
+            <tr>
+                <td>13</td>
+                <td>14</td>
+                <td>15</td>
+                <td>16</td>
+                <td>17</td>
+                <td>18</td>
+            </tr>
+            <tr>
+                <td>19</td>
+                <td>20</td>
+                <td>21</td>
+                <td>22</td>
+                <td>23</td>
+                <td>24</td>
+            </tr>
+            <tr>
+                <td>25</td>
+                <td>26</td>
+                <td>27</td>
+                <td>28</td>
+                <td>29</td>
+                <td>30</td>
+            </tr>
+            <tr>
+                <td>31</td>
+                <td>32</td>
+                <td>33</td>
+                <td>34</td>
+                <td>35</td>
+                <td>36</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        function getRandomColor() {
+            var letters = "0123456789ABCDEF";
+            var color = "#";
+            for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+        }
+
+        function changeColorToRandom() {
+            var cell4 = document.getElementById("cell4");
+            var color = getRandomColor();
+            cell4.style.backgroundColor = color;
+        }
+
+        function changeColor() {
+            var cell4 = document.getElementById("cell4");
+            var color = document.getElementById("color_picker").value;
+            cell4.style.backgroundColor = color;
+        }
+
+        function changeDiagonalColors() {
+            var table = document.getElementsByTagName("table")[0];
+            var rows = table.getElementsByTagName("tr");
+            var color = getRandomColor();
+
+            for (var i = 0; i < rows.length; i++) {
+                var cols = rows[i].getElementsByTagName("td");
+                var oppositeIndex = cols.length - 1 - i; // Обчислення індексу для побічної діагоналі
+                if (cols[oppositeIndex] !== undefined) {
+                    cols[oppositeIndex].style.backgroundColor = color;
+                }
+            }
+        }
+    </script>
+</body>
+</html>
