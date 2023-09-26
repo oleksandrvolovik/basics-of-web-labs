@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>Лабораторна робота №4</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+
+<body>
+    <div class="container">
+        <h1>Join Chat</h1>
+        <form id="form" action="">
+            <div class="input-container">
+                <label for="nickname_input">Enter your nickname:</label>
+                <input id="nickname_input" placeholder="Alice" pattern=".{3,24}" autocomplete="off" />
+            </div>
+            <p id="username_taken_message" class="error-message" style="display: none;">Username already taken. Please
+                choose another username.</p>
+            <div class="input-container">
+                <label for="room_input">Enter room name:</label>
+                <input id="room_input" placeholder="Public" pattern=".{0,10}" autocomplete="off" />
+            </div>
+            <button>Join</button>
+        </form>
+        <ul id="rooms" class="room-list">Rooms</ul>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="join.js"></script>
+</body>
+
+</html>

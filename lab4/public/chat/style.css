@@ -1,0 +1,167 @@
+/* Reset default margin and padding */
+body,
+h1,
+ul,
+li,
+p {
+    margin: 0;
+    padding: 0;
+}
+
+/* Set a background color similar to WhatsApp */
+body {
+    background-color: #e5ddd5;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+/* Header styling */
+header {
+    background-color: #075e54;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+}
+
+/* Chat container styling */
+ul#messages {
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    list-style-type: none;
+    padding: 0;
+    /* Remove the padding */
+    overflow-y: auto;
+    /* Add scrollable overflow-y */
+    max-height: 80vh;
+    /* Limit the height of the message container */
+}
+
+/* Individual message styling */
+ul#messages li {
+    margin-bottom: 10px;
+    max-width: 70%;
+    padding: 10px;
+}
+
+/* Sender's message */
+.sent-message {
+    background-color: #dcf8c6;
+    float: right;
+    clear: both;
+    margin-right: 10px;
+    border-radius: 20px;
+    /* Increase the border-radius for bigger bubbles */
+    max-width: 70%;
+    padding: 15px;
+    /* Increase padding for bigger bubbles */
+}
+
+/* Receiver's message */
+.received-message {
+    background-color: #fff;
+    float: left;
+    clear: both;
+    margin-left: 10px;
+    border-radius: 20px;
+    /* Increase the border-radius for bigger bubbles */
+    max-width: 70%;
+    padding: 15px;
+    /* Increase padding for bigger bubbles */
+}
+
+/* Style for the message author */
+.message-author {
+    font-weight: bold;
+    color: #075e54;
+    margin-bottom: 4px;
+}
+
+/* Style for join messages */
+.join-message {
+    background-color: #dcf8c6;
+    /* Background color for join messages */
+    text-align: center;
+    /* Center align the text */
+    font-weight: bold;
+    /* Make the text bold */
+}
+
+/* Style for leave messages */
+.leave-message {
+    background-color: #ffcccc;
+    /* Background color for leave messages */
+    text-align: center;
+    /* Center align the text */
+    font-weight: bold;
+    /* Make the text bold */
+}
+
+/* Message text styling */
+ul#messages li p {
+    margin: 0;
+    word-wrap: break-word;
+}
+
+/* Form styling */
+form#form {
+    background-color: #fff;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+form#form>* {
+    margin: 5px;
+}
+
+/* Input field styling */
+input#input {
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    padding: 10px 20px;
+    flex-grow: 1;
+    font-size: 14px;
+    outline: none;
+}
+
+/* Send button styling */
+button {
+    background-color: #25d366;
+    border: none;
+    border-radius: 50%;
+    color: #fff;
+    cursor: pointer;
+    font-size: 20px;
+    height: 40px;
+    width: 40px;
+    margin-left: 10px;
+    /* Add spacing between input and button */
+}
+
+/* Hide bullet points for list items */
+ul#messages {
+    list-style-type: none;
+}
+
+/* Style the header text */
+header h1 {
+    margin: 10px 0;
+    text-align: center;
+}
+
+/* Style the nickname */
+#nickname {
+    font-weight: bold;
+    margin: 0;
+    padding-left: 10px;
+}
+
+/* Style message timestamps */
+.message-timestamp {
+    font-size: 10px;
+    color: #999;
+    margin-top: 5px;
+}

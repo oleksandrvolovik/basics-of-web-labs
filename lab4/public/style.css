@@ -1,0 +1,98 @@
+/* Reset some default styles for better consistency */
+body,
+html {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #e5ddd5; /* Set a background color similar to WhatsApp */
+}
+
+/* Style for the container */
+.container {
+    text-align: center;
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff; /* Set background color to white */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2); /* Add a box-shadow */
+}
+
+/* Style for the heading */
+h1 {
+    color: #075e54; /* Set text color similar to WhatsApp header */
+}
+
+/* Style for the input containers */
+.input-container {
+    margin: 10px 0;
+}
+
+/* Style for the input fields */
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+/* Style for the button */
+button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 5px;
+    background-color: #25d366; /* Set button color similar to WhatsApp */
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+/* Style for the button on hover */
+button:hover {
+    background-color: #128c7e; /* Darker color on hover */
+}
+
+/* Style for the list of rooms */
+.room-list {
+    list-style-type: none;
+    margin: 20px auto;
+    max-width: 400px;
+    padding: 0;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff; /* Set background color to white */
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Style for individual room items */
+.room-list li {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    font-size: 16px;
+    text-align: center;
+}
+
+/* Style for the last room item without a bottom border */
+.room-list li:last-child {
+    border-bottom: none;
+}
+
+/* Add styling for error messages */
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+/* Add styling for the input field with an error */
+.error-input {
+    border: 2px solid red;
+}
