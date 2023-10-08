@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/login/style.css" type="text/css">
+    <title>Login Page</title>
+</head>
+<body>
+<form id="loginForm" action="/login" method="post" enctype="application/x-www-form-urlencoded">
+    <h2>Login</h2>
+
+    <p>
+        <input id="emailInput" type="email" placeholder="Email" name="email" required>
+    </p>
+
+    <p>
+        <input id="passwordInput" type="password" placeholder="Password" name="password" minlength="8" required>
+    </p>
+
+    <p><input type="submit" value="Login"></p>
+
+    <!-- Conditional block to display error message -->
+    <!--/*@thymesVar id="loginFailed" type="Boolean"*/-->
+    <p th:if="${loginFailed}" style="color: red;">Username or password incorrect</p>
+
+    <a class="create_acc_link" href="/register">
+        Create new Account
+    </a>
+</form>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+
+<script>
+    const loginForm = document.getElementById('loginForm');
+    const passwordInput = document.getElementById('passwordInput');
+
+    // Add an event listener to the login form
+    loginForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const password = passwordInput.value;
+
+        // Update the password input field with the hashed value
+        passwordInput.value = CryptoJS.SHA256(password).toString();
+
+        // Submit the form with the hashed password
+        this.submit();
+    });
+</script>
+
+</body>
+</html>

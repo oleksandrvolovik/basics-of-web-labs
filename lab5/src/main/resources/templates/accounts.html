@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/accounts/style.css" type="text/css">
+    <title>Manage Accounts</title>
+</head>
+<body>
+<h1>Manage Accounts</h1>
+
+<p><a href="/home">Back</a></p>
+
+<table>
+    <thead>
+    <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Email</th>
+        <th>Password Hash</th>
+        <th>Permissions</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!--/*@thymesVar id="users" type="Array<web.basics.lab5.model.User>"*/-->
+    <tr th:data-email="${user.email}" th:each="user : ${users}">
+        <td>
+            <span th:text="${user.firstName}"></span>
+            <button th:if="${userCanChangeNames}" class="editFirstNameButton">Edit First Name</button>
+        </td>
+        <td>
+            <span th:text="${user.lastName}"></span>
+            <button th:if="${userCanChangeNames}" class="editLastNameButton">Edit Last Name</button>
+        </td>
+        <td>
+            <span th:text="${user.email}"></span>
+            <button th:if="${userCanChangeEmails}" class="editEmailButton">Edit Email</button>
+        </td>
+        <td>
+            <span th:text="${user.passwordHash}"
+                  style="max-width: 135px;display: inline-block;overflow: hidden;text-overflow: ellipsis"></span>
+            <button th:if="${userCanChangePasswords}" class="editPasswordButton">Edit Password</button>
+        </td>
+        <td>
+            <ul class="permission-list">
+                <li th:each="permission : ${user.permissions}">
+                    <a href="#" th:data-email="${user.email}" th:data-permission="${permission}"
+                       class="remove-permission-link">
+                        <span th:text="${permission}"></span>
+                        <span th:if="${userCanChangePermissions}">(Remove)</span>
+                    </a>
+                </li>
+            </ul>
+        </td>
+        <td>
+            <select th:if="${userCanChangePermissions}" class="permission-select">
+                <option th:each="permission : ${permissions}" th:value="${permission}" th:text="${permission}"></option>
+            </select>
+            <button th:if="${userCanChangePermissions}" th:data-email="${user.email}" class="add-permission-button">
+                Add Permission
+            </button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+
+<script>
+    function addAddPermissionListener(button) {
+        button.addEventListener("click", function (event) {
+            event.preventDefault();
+            const email = button.getAttribute("data-email");
+            const select = button.parentElement.querySelector(".permission-select");
+            const selectedPermission = select.value;
+
+            // Check if the permission already exists in the list
+            const permissionList = button.parentElement.parentElement.querySelector(".permission-list");
+            const existingPermissions = permissionList.querySelectorAll(".remove-permission-link");
+            let permissionExists = false;
+
+            existingPermissions.forEach(function (existingPermission) {
+                const existingPermissionName = existingPermission.getAttribute("data-permission");
+                if (existingPermissionName === selectedPermission) {
+                    permissionExists = true;
+                }
+            });
+
+            if (!permissionExists) {
+                // Make a POST request to add the selected permission
+                fetch(`/accounts/${email}/permissions/${selectedPermission}`, {
+                    method: "POST"
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            // Add the new permission to the list if it does not exist already
+                            const permissionList = button.parentElement.parentElement.querySelector(".permission-list");
+                            const newPermissionLi = document.createElement("li");
+                            const newPermissionA = document.createElement("a")
+
+                            newPermissionA.setAttribute("href", "#")
+                            newPermissionA.setAttribute("data-email", email)
+                            newPermissionA.setAttribute("data-permission", selectedPermission)
+                            newPermissionA.setAttribute("class", "remove-permission-link")
+                            newPermissionA.innerHTML = `
+                        <span>${selectedPermission}</span> (Remove)
+                        `
+
+                            newPermissionLi.appendChild(newPermissionA)
+                            permissionList.appendChild(newPermissionLi);
+                            addRemovePermissionListener(newPermissionA)
+                        } else {
+                            console.error("Failed to add permission");
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                    });
+            }
+        });
+    }
+
+    function addRemovePermissionListener(button) {
+        button.addEventListener("click", function (event) {
+            event.preventDefault();
+            const email = button.getAttribute("data-email");
+            const permission = button.getAttribute("data-permission");
+
+            // Make a DELETE request to remove the permission
+            fetch(`/accounts/${email}/permissions/${permission}`, {
+                method: "DELETE"
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Remove the permission from the list on success
+                        button.parentElement.remove();
+                    } else {
+                        console.error("Failed to remove permission");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const removePermissionLinks = document.querySelectorAll(".remove-permission-link");
+        const addPermissionButtons = document.querySelectorAll(".add-permission-button");
+        const editFirstNameButtons = document.querySelectorAll(".editFirstNameButton");
+        const editLastNameButtons = document.querySelectorAll(".editLastNameButton");
+        const editEmailButtons = document.querySelectorAll(".editEmailButton");
+        const editPasswordButtons = document.querySelectorAll(".editPasswordButton");
+
+        removePermissionLinks.forEach(addRemovePermissionListener);
+        addPermissionButtons.forEach(addAddPermissionListener);
+
+        editFirstNameButtons.forEach(function (button) {
+            button.addEventListener("click", function (event) {
+                event.preventDefault()
+
+                const email = button.parentElement.parentElement.getAttribute("data-email");
+                const newFirstName = prompt(`Enter new first name for user ${email}`);
+
+                // Make a PUT request to /accounts/{email}/first-name
+                fetch(`/accounts/${email}/first-name`, {
+                    method: "PUT",
+                    body: `${newFirstName}`
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            // User first name changed successfully
+                            button.parentElement.querySelector("span").textContent = newFirstName;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error changing first name:', error);
+                    });
+            });
+        });
+
+        editLastNameButtons.forEach(function (button) {
+            button.addEventListener("click", function (event) {
+                event.preventDefault()
+
+                const email = button.parentElement.parentElement.getAttribute("data-email");
+                const newLastName = prompt(`Enter new last name for user ${email}`);
+
+                // Make a PUT request to /accounts/{email}/last-name
+                fetch(`/accounts/${email}/last-name`, {
+                    method: "PUT",
+                    body: `${newLastName}`
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            // User first name changed successfully
+                            button.parentElement.querySelector("span").textContent = newLastName;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error changing last name:', error);
+                    });
+            });
+        });
+
+        editEmailButtons.forEach(function (button) {
+            button.addEventListener("click", function (event) {
+                event.preventDefault();
+
+                const email = button.parentElement.parentElement.getAttribute("data-email");
+                const newEmail = prompt(`Enter new email for user ${email}`);
+
+                // Make a PUT request to /accounts/{email}
+                fetch(`/accounts/${email}`, {
+                    method: "PUT",
+                    body: `${newEmail}`
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            // User email changed successfully
+                            button.parentElement.querySelector("span").textContent = newEmail;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error changing email:', error);
+                    });
+            });
+        });
+
+        editPasswordButtons.forEach(function (button) {
+            button.addEventListener("click", function (event) {
+                event.preventDefault();
+
+                const email = button.parentElement.parentElement.getAttribute("data-email");
+                const newPassword = CryptoJS.SHA256(prompt(`Enter new password for user ${email}`)).toString();
+
+                // Make a PUT request to /accounts/{email}/password
+                fetch(`/accounts/${email}/password`, {
+                    method: "PUT",
+                    body: `${newPassword}`
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            // User password changed successfully
+                            button.parentElement.querySelector("span").textContent = newPassword;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error changing password:', error);
+                    });
+            });
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/login/style.css" type="text/css">
+    <title>Register Page</title>
+</head>
+<body>
+<form id="registrationForm" action="/register" method="post" enctype="application/x-www-form-urlencoded">
+    <h2>Register</h2>
+
+    <p>
+        <input type="text" placeholder="First name" name="firstName" minlength="1" required>
+    </p>
+
+    <p>
+        <input type="text" placeholder="Last name" name="lastName" minlength="1" required>
+    </p>
+
+    <div id="emailAvailabilityError" style="color: red;"></div>
+
+    <p>
+        <input id="emailInput" type="email" placeholder="Email" name="email" required>
+    </p>
+
+    <div id="passwordsNotMatchingError" style="color: red;"></div>
+
+    <p>
+        <input id="passwordInput" type="password" placeholder="Password" name="password" minlength="8" required>
+    </p>
+
+    <p>
+        <input id="repeatedPasswordInput" type="password" placeholder="Repeat password" minlength="8" required>
+    </p>
+
+    <p>
+        <input type="submit" value="Register" id="registerButton">
+    </p>
+
+    <a class="login_link" href="/login">Login</a>
+</form>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+
+<script>
+    const emailInput = document.getElementById('emailInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const repeatedPasswordInput = document.getElementById('repeatedPasswordInput');
+    const emailAvailabilityError = document.getElementById('emailAvailabilityError');
+    const passwordsNotMatchingError = document.getElementById('passwordsNotMatchingError');
+    const registrationForm = document.getElementById('registrationForm');
+    const registerButton = document.getElementById('registerButton');
+
+    registerButton.addEventListener('click', function (event) {
+        event.preventDefault();
+        if (!registrationForm.reportValidity()) {
+            return;
+        }
+
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        const repeatedPassword = repeatedPasswordInput.value;
+
+        if (password !== repeatedPassword) {
+            passwordInput.style.borderColor = 'red';
+            repeatedPasswordInput.style.borderColor = 'red';
+            passwordsNotMatchingError.textContent = 'Entered passwords do not match';
+            return;
+        } else {
+            passwordInput.style.borderColor = '';
+            repeatedPasswordInput.style.borderColor = '';
+            passwordsNotMatchingError.textContent = '';
+        }
+
+        // Hash the password using SHA-256
+        const hashedPassword = CryptoJS.SHA256(password).toString();
+
+        // Make a GET request to /checkEmailAvailability
+        fetch(`/checkEmailAvailability?email=${encodeURIComponent(email)}`)
+            .then(response => response.text())
+            .then(isAvailable => {
+                if (isAvailable === 'true') {
+                    emailAvailabilityError.textContent = '';
+                    emailInput.style.borderColor = ''; // Reset border color
+                    passwordInput.value = hashedPassword; // Replace password with hash
+                    registrationForm.submit(); // Proceed with registration
+                } else {
+                    emailAvailabilityError.textContent = 'This email is already used.';
+                    emailInput.style.borderColor = 'red';
+                }
+            })
+            .catch(error => {
+                console.error('Error checking email availability:', error);
+            });
+    });
+</script>
+
+</body>
+</html>

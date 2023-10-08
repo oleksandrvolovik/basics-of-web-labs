@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/home/style.css" type="text/css">
+    <title>Home</title>
+</head>
+<body>
+<h1>Welcome to Your Home Page</h1>
+
+<p>Your First Name: <span id="firstName" th:text="${user.firstName}"></span></p>
+<button id="editFirstNameButton" th:if="${userCanChangeOwnName}">Edit First Name</button>
+
+<p>Your Last Name: <span id="lastName" th:text="${user.lastName}"></span></p>
+<button id="editLastNameButton" th:if="${userCanChangeOwnName}">Edit Last Name</button>
+
+<p>Your Email: <span th:text="${user.email}"></span></p>
+
+<th:block th:if="${userCanGetInfoAboutOtherAccounts}">
+    <!-- Conditionally show the "Manage Accounts" link -->
+    <p><a href="/accounts">Manage Accounts</a></p>
+</th:block>
+
+<p><a href="/logout">Logout</a></p>
+
+<th:block th:if="${userCanChangeOwnEmail}">
+    <!-- Conditionally show the email change form -->
+    <form id="emailChangeForm">
+        <h2>Change Email</h2>
+
+        <div id="emailChangePasswordError" style="color: red;"></div>
+        <div id="emailChanged" style="color: darkgreen;"></div>
+
+        <label for="password">Your password:</label>
+        <input type="password" id="password" placeholder="Your password" name="password" minlength="8" required><br>
+
+        <label for="newEmail">New email:</label>
+        <input type="email" id="newEmail" placeholder="New email" name="newEmail" required><br>
+
+        <input type="submit" value="Change Email">
+    </form>
+</th:block>
+
+<th:block th:if="${userCanChangeOwnPassword}">
+    <!-- Conditionally show the password change form -->
+    <form id="passwordChangeForm">
+        <h2>Change Password</h2>
+
+        <div id="passwordChanged" style="color: darkgreen;"></div>
+
+        <label for="oldPassword">Old password:</label>
+        <input type="password" id="oldPassword" placeholder="Old password" name="oldPassword" minlength="8"
+               required><br>
+
+        <div id="passwordError" style="color: red;"></div>
+
+        <label for="newPassword">New password:</label>
+        <input type="password" id="newPassword" placeholder="New password" name="newPassword" minlength="8"
+               required><br>
+
+        <label for="confirmNewPassword">Confirm new password:</label>
+        <input type="password" id="confirmNewPassword" placeholder="Repeat new password" minlength="8"
+               name="newPassword"
+               required><br>
+
+        <input type="submit" value="Change Password">
+    </form>
+</th:block>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+
+<script>
+    const editFirstNameButton = document.getElementById('editFirstNameButton');
+    const editLastNameButton = document.getElementById('editLastNameButton');
+
+    editFirstNameButton?.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        const newFirstName = prompt(`Enter your new first name:`);
+
+        // Make a PUT request to /home/first-name
+        fetch(`/home/first-name`, {
+            method: "PUT",
+            body: `${newFirstName}`
+        })
+            .then(response => {
+                if (response.ok) {
+                    // User first name changed successfully
+                    document.getElementById('firstName').textContent = newFirstName;
+                }
+            })
+            .catch(error => {
+                console.error('Error changing first name:', error);
+            });
+    });
+
+    editLastNameButton?.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        const newLastName = prompt(`Enter your new last name:`);
+
+        // Make a PUT request to /home/last-name
+        fetch(`/home/last-name`, {
+            method: "PUT",
+            body: `${newLastName}`
+        })
+            .then(response => {
+                if (response.ok) {
+                    // User last name changed successfully
+                    document.getElementById('lastName').textContent = newLastName;
+                }
+            })
+            .catch(error => {
+                console.error('Error changing last name:', error);
+            });
+    })
+
+
+    const emailChangeForm = document.getElementById('emailChangeForm');
+    const passwordInput = document.getElementById('password');
+    const newEmailInput = document.getElementById('newEmail');
+    const emailChanged = document.getElementById('emailChanged');
+    const emailChangePasswordError = document.getElementById('emailChangePasswordError');
+
+    emailChangeForm?.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const password = passwordInput.value;
+        const newEmail = newEmailInput.value;
+
+        // Hash the password using SHA-256
+        const hashedPassword = CryptoJS.SHA256(password).toString();
+
+        // Make a PUT request to /home/email
+        fetch("/home/email", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json", // Set the content type to JSON
+            },
+            body: JSON.stringify({
+                hashedPassword: hashedPassword,
+                newEmail: newEmail
+            }),
+        })
+            .then(response => {
+                if (response.ok) {
+                    // Email changed successfully
+                    emailChanged.textContent = 'Email successfully changed!';
+                    emailChangePasswordError.textContent = '';
+                } else {
+                    // Failed to change email
+                    emailChanged.textContent = '';
+                    emailChangePasswordError.textContent = 'Password is incorrect!';
+                }
+            })
+            .catch(error => {
+                console.error('Error changing password:', error);
+            });
+    })
+
+    const passwordChangeForm = document.getElementById('passwordChangeForm');
+    const oldPasswordInput = document.getElementById('oldPassword');
+    const newPasswordInput = document.getElementById('newPassword');
+    const passwordError = document.getElementById('passwordError');
+    const passwordChanged = document.getElementById("passwordChanged")
+    const confirmNewPasswordInput = document.getElementById('confirmNewPassword');
+
+    // Add an event listener to the login form
+    passwordChangeForm?.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const oldPassword = oldPasswordInput.value;
+        const newPassword = newPasswordInput.value;
+        const repeatedNewPassword = confirmNewPasswordInput.value;
+
+        if (newPassword !== repeatedNewPassword) {
+            newPasswordInput.style.borderColor = 'red';
+            confirmNewPasswordInput.style.borderColor = 'red';
+            passwordError.textContent = 'Entered passwords do not match';
+            return;
+        } else {
+            newPasswordInput.style.borderColor = '';
+            confirmNewPasswordInput.style.borderColor = '';
+            passwordError.textContent = '';
+        }
+
+        // Hash the passwords using SHA-256
+        const hashedOldPassword = CryptoJS.SHA256(oldPassword).toString();
+        const hashedNewPassword = CryptoJS.SHA256(newPassword).toString();
+
+        // Make a PUT request to /home/password
+        fetch("/home/password", {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json", // Set the content type to JSON
+            },
+            body: JSON.stringify({
+                hashedOldPassword: hashedOldPassword,
+                hashedNewPassword: hashedNewPassword,
+            }),
+        })
+            .then(response => {
+                if (response.ok) {
+                    // Password changed successfully
+                    passwordChanged.textContent = 'Password successfully updated!';
+                    passwordError.textContent = '';
+                } else {
+                    // Failed to change password
+                    passwordChanged.textContent = '';
+                    passwordError.textContent = 'Old password is incorrect!';
+                }
+            })
+            .catch(error => {
+                console.error('Error changing password:', error);
+            });
+    });
+</script>
+
+</body>
+</html>
